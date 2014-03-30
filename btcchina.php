@@ -243,6 +243,7 @@ fwrite($fh, "Total BTC = ".$amount_btc."\n");
 fwrite($fh, "Total CNY = ".$amount_cny."\n");
 
 $last_trade_time = time();
+for(;;)
 {
     $last_trade_price = update_last_trade($last_trade_price, $last_trade_time, ($amount_btc >= $trad_btc));
     
