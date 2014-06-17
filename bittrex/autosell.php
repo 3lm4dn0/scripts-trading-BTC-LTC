@@ -21,10 +21,10 @@ $key = "";
 $apisecret = "";
 
 /* Coin to sell */
-$coin = 'FRAC';
+$coin = 'DOGE';
 
 /* Market where sell */
-$market = 'BTC-FRAC';
+$market = 'BTC-DOGE';
 
 /* min quantity to sell */ 
 $min = 1.0;
@@ -50,11 +50,6 @@ $api = new APIBittrex($key, $apisecret);
 
 $loop = 0;
 $uuid = "";
-
-
-$result = $api->get_balances();
-print_r($result);
-exit(0);
 
 for(;;)
 {			
