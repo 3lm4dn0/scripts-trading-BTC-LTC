@@ -23,18 +23,6 @@ class API {
 	}
 	
 	/**
-	 * Used to place any order in a specific market.
-	 *
-	 * @param String $market  required 	a string literal for the market (ex: BTC-LTC)
-	 * @param float $quantity required 	the amount to purchase
-	 * @param float $rate     required 	the rate at which to place the order. this is not needed for market orders
-	 * @return Ambigous <NULL, mixed>
-	 */
-	protected function operation($method, $params = array()){
-		return $this->request_data ($method, true, $params);
-	}
-	
-	/**
 	 * Get the key
 	 * 
 	 * @return string

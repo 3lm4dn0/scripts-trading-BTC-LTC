@@ -27,17 +27,6 @@ class APIBittrex extends API {
 		$uri = $this->url . $version . $method;
 		
 		$separator = '?';
-		
-		/* if not public sign key and secret */
-		if ($sign) {
-			$separator = '&';
-			$nonce = time ();
-			$uri .= '?apikey=' . $this->apikey. '&nonce=' . $nonce;
-			$sign = hash_hmac ( 'sha512', $uri, $this->apisecret );
-			$array = array (
-					'apisign:' . $sign 
-			);
-		}
 
 		/* add params */
 		if (! empty ( $params )) {
@@ -47,22 +36,22 @@ class APIBittrex extends API {
 			}
 		}
 		
-		$ch = curl_init ( $uri );
-		curl_setopt ( $ch, CURLOPT_HTTPHEADER, $array );
-		$execResult = curl_exec ( $ch );
-		$result = json_decode( $execResult );
-				
-		echo "\nExec Result\n";
-		var_dump($execResult);
-		echo "\n";
-		
-		if ($result['success']) {
-			return $result['result'];
+		/* if not public sign key and secret */
+		if ($sign) {
+			$nonce = time ();
+			$uri .= $separator . 'apikey=' . $this->apikey. '&nonce=' . $nonce;
+			$sign = hash_hmac ( 'sha512', $uri, $this->apisecret );
+			$array = array (
+					'apisign:' . $sign 
+			);			
 		}
 		
-		print $result['message'];
+		$ch = curl_init ( $uri );
+		curl_setopt ( $ch, CURLOPT_HTTPHEADER, $array );
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$execResult = curl_exec ( $ch );
 		
-		return null;
+		return json_decode( $execResult, true);
 	}
 	
 	/**
@@ -92,8 +81,7 @@ class APIBittrex extends API {
 	 */
 	function get_ticker($market) {
 		return $this->request_data ( '/public/getticker', false, array (
-				'market',
-				$market 
+				'market' => $market
 		) );
 	}
 	
@@ -161,7 +149,7 @@ class APIBittrex extends API {
 				'rate' => $rate 
 		);
 		
-		return $this->operation ( '/market/buylimit', $array );
+		return $this->request_data ( '/market/buylimit', true, $array );
 	}
 	
 	/**
@@ -182,7 +170,7 @@ class APIBittrex extends API {
 				'quantity' => $quantity 
 		);
 		
-		return $this->operation ( '/market/buymarket', $array );
+		return $this->request_data ( '/market/buymarket', true, $array );
 	}
 	
 	/**
@@ -206,7 +194,7 @@ class APIBittrex extends API {
 				'rate' => $rate 
 		);
 		
-		return $this->operation ( '/market/selllimit', $array );
+		return $this->request_data ( '/market/selllimit', true, $array );
 	}
 	
 	/**
@@ -226,7 +214,7 @@ class APIBittrex extends API {
 				'quantity' => $quantity 
 		);
 		
-		return $this->operation ( '/market/sellmarket', $array );
+		return $this->request_data ( '/market/sellmarket', true, $array);
 	}
 	
 	/**
@@ -242,7 +230,7 @@ class APIBittrex extends API {
 				'uuid' => $uuid 
 		);
 		
-		return ($this->request_data ( '/market/cancel', $array ) != null);
+		return ($this->request_data ( '/market/cancel', true, $array ) != null);
 	}
 	
 	/**
@@ -261,7 +249,7 @@ class APIBittrex extends API {
 			);
 		}
 		
-		return $this->request_data ( '/market/getopenorders', true, $array );
+		return $this->request_data ( '/market/getopenorders', true, $array, 'v1' );
 	}
 	
 	/**
@@ -275,7 +263,7 @@ class APIBittrex extends API {
 	 *
 	 */
 	function get_balances() {
-		return $this->request_data ( '/account/getbalances', false );
+		return $this->request_data ( '/account/getbalances', true );
 	}
 	
 	/**
@@ -347,7 +335,7 @@ class APIBittrex extends API {
 		return $this->request_data ( '/account/getorderhistory', true, array (
 				'market' => $market,
 				'count' => $count 
-		) );
+		));
 	}
 	
 	/**
