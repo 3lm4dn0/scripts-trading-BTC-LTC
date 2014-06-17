@@ -17,7 +17,7 @@ class API {
 	 * @param array $params
 	 * @return multitype|NULL
 	 */
-	protected function request_data($method, $sign = false, $params = array()){
+	protected function request_data($method, $sign = false, $params = array(), $version){
 		
 		return array();
 	}

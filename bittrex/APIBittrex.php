@@ -14,7 +14,7 @@ class APIBittrex extends API {
 	function __construct($key, $apisecret) {
 		parent::__construct ( $key, $apisecret );
 		
-		$this->url = "https://bittrex.com/api/v1.1";
+		$this->url = "https://bittrex.com/api/";
 	}
 	
 	/**
@@ -22,9 +22,9 @@ class APIBittrex extends API {
 	 *
 	 * @see API::request_data()
 	 */
-	function request_data($method, $sign = false, $params = array()) {
+	function request_data($method, $sign = false, $params = array(), $version = 'v1.1') {
 		$array = array ();
-		$uri = $this->url . $method;
+		$uri = $this->url . $version . $method;
 		
 		$separator = '?';
 		
@@ -38,25 +38,29 @@ class APIBittrex extends API {
 					'apisign:' . $sign 
 			);
 		}
-		
+
 		/* add params */
 		if (! empty ( $params )) {
 			foreach ( $params as $k => $v ) {
 				$uri .= $separator . $k . "=" . $v;
 				$separator = "&";
 			}
-		}		
+		}
 		
 		$ch = curl_init ( $uri );
 		curl_setopt ( $ch, CURLOPT_HTTPHEADER, $array );
 		$execResult = curl_exec ( $ch );
-		$result = json_decode ( $execResult );
+		$result = json_decode( $execResult );
+				
+		echo "\nExec Result\n";
+		var_dump($execResult);
+		echo "\n";
 		
-		if ($result ['success']) {
-			return $result ['result'];
+		if ($result['success']) {
+			return $result['result'];
 		}
 		
-		print $result ['message'];
+		print $result['message'];
 		
 		return null;
 	}
@@ -114,7 +118,7 @@ class APIBittrex extends API {
 	 * @return array <NULL, mixed>
 	 */
 	function get_order_book($market, $type, $depth = 20) {
-		return $this->request_data ( '/public/getorderbook', array (
+		return $this->request_data ( '/public/getorderbook', false, array (
 				'market' => $market,
 				'type' => $type,
 				'depth' => $depth 
@@ -130,7 +134,7 @@ class APIBittrex extends API {
 	 * @return array <NULL, mixed>
 	 */
 	function get_market_history($market, $count = 20) {
-		return $this->request_data ( '/market/getmarkethistory', array (
+		return $this->request_data ( '/public/getmarkethistory', false, array (
 				'market' => $market,
 				'count' => $count 
 		) );
@@ -271,11 +275,12 @@ class APIBittrex extends API {
 	 *
 	 */
 	function get_balances() {
-		return $this->request_data ( '/account/getbalances', true );
+		return $this->request_data ( '/account/getbalances', false );
 	}
 	
 	/**
 	 * Used to retrieve the balance from your account for a specific currency.
+	 * TODO: There is a problem with API 1.1 with this request
 	 *
 	 * @param string $currency
 	 *        	required a string literal for the currency (ex: LTC)
@@ -283,10 +288,11 @@ class APIBittrex extends API {
 	 */
 	function get_balance($currency) {
 		$array = array (
+				'apikey' => $this->apikey,
 				'currency' => $currency 
 		);
 		
-		return $this->request_data ( '/account/getbalances', true, $array );
+		return $this->request_data ( '/account/getbalance', false, $array , 'v1');
 	}
 	
 	/**
@@ -338,7 +344,7 @@ class APIBittrex extends API {
 	 * @return array <NULL, mixed>
 	 */
 	function get_order_history($market, $count = 20) {
-		return $this->request_data ( '/account/getorderhistory', array (
+		return $this->request_data ( '/account/getorderhistory', true, array (
 				'market' => $market,
 				'count' => $count 
 		) );
@@ -355,7 +361,7 @@ class APIBittrex extends API {
 	 * @return array <NULL, mixed>
 	 */
 	function get_withdrawal_history($currency, $count = 20) {
-		return $this->request_data ( '/account/getwithdrawalhistory', array (
+		return $this->request_data ( '/account/getwithdrawalhistory', true, array (
 				'currency' => $currency,
 				'count' => $count 
 		) );
@@ -371,7 +377,7 @@ class APIBittrex extends API {
 	 * @return array <NULL, mixed>
 	 */
 	function get_deposit_history($currency, $count = 20) {
-		return $this->request_data ( '/account/getdeposithistory', array (
+		return $this->request_data ( '/account/getdeposithistory', true, array (
 				'currency' => $currency,
 				'count' => $count 
 		) );
