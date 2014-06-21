@@ -319,7 +319,7 @@ class APIBittrex extends API {
 				'address' => $address 
 		);
 		
-		return $this->request_data ( '/account/withdraw', $array );
+		return $this->request_data ( '/account/withdraw', true, $array );
 	}
 	
 	/**
