@@ -21,10 +21,10 @@ $key = "";
 $apisecret = "";
 
 /* Coin to sell */
-$coin = 'DOGE';
+$coin = 'ETH';
 
 /* Market where sell */
-$market = 'BTC-DOGE';
+$market = 'BTC-ETH';
 
 /* min quantity to sell */ 
 $min = 1.0;
@@ -33,8 +33,8 @@ $min = 1.0;
 $ticket = 'Ask';
 
 /* loops you want to wait open order before cancel them */
-$min_loops = 5;
-
+$min_loops = 60; // 60 min.
+$sleep = 60; // 1 min.
 
 /**
  * Log file
@@ -73,11 +73,11 @@ for(;;)
 			/* save order */
 			$uuid = $result['result']['uuid'];
 			
-			fwrite($fh, date('Y-m-d H:i:s', time()).": Sell market $amount $coin at $rate\n");
+			fwrite($fh, date('Y-m-d H:i:s', time()).": Sell limit $amount $coin at $rate\n");
 		}
 		else
 		{
-			fwrite($fh, date('Y-m-d H:i:s', time()).": Error sell market: ".$result['message']."\n");
+			fwrite($fh, date('Y-m-d H:i:s', time()).": Error sell limit: ".$result['message']."\n");
 		}
 	}
 	
@@ -87,8 +87,10 @@ for(;;)
 	$result = $api->get_open_orders($market);	
 	
 	/* check if our order sell still is open order */	
+	if($result != null)
+	{
 	foreach($result['result'] as $v){
-		if( ($loop > $min_loops) && ($v['OrderUuid'] == $uuid) )
+                if( ($loop > $min_loops) && ($v['OrderUuid'] == $uuid) )
 		{
 			/* cancel order */
 			$result = $api->cancel_order($uuid);
@@ -100,15 +102,20 @@ for(;;)
 	}
 	
 	/* confirm sell in history */
-	if(empty($result['result']))
+        if(empty($result['result']) && ($uuid != ""))
 	{		
 		$result = $api->get_order_history($market);
+                if( ($result != null) && isset($result['result']))
+		{
 		foreach($result['result'] as $v){
-			if($v['OrderUuid'] == $uuid){
+                        if( isset($v['OrderUuid']) && ($v['OrderUuid'] == $uuid) )
+			{
 				fwrite($fh, date('Y-m-d H:i:s', time()).": Selled order $uuid with ".$v['Quantity']." $coin at rate ".$v['Limit']." at ".$v['TimeStamp']."\n");
 			}
 		}
+		}
+	}
 	}
 		
-	sleep(60);
+        sleep($sleep);
 }
