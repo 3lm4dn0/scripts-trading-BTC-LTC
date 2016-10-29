@@ -1,4 +1,4 @@
-# Scripts to trade in Poloniex or Bittrex
+# Scripts to trade cryptocurrencies
 ---
 
 This repo is a set of several PHP scripts to trade cryptocurrencies
