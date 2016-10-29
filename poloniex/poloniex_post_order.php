@@ -86,15 +86,17 @@ foreach($result as $coin => $value) {
 if($type == "BUY"){
     /* get total balance */
     if($amount == "all") {
-        $amount = round((double)$result['BTC']['available'] / (double)$rate, 8, PHP_ROUND_HALF_UP);
+        $amount = bcdiv((double)$result['BTC']['available'], (double)$rate, 8);
     }
     $result = $api->buy($pair, $rate, $amount);
+
 }else{
     /* get total balance */
     if($amount == "all") {
-        $amount = round((double)$result[$coins[1]]['available'], 8, PHP_ROUND_HALF_UP);
+        $amount = round((double)$result[$coins[1]]['available'], 8, PHP_ROUND_HALF_DOWN);
     }
     $result = $api->sell($pair, $rate, $amount);
+
 }
 
 if(isset($result['error'])){
