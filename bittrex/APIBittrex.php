@@ -249,7 +249,7 @@ class APIBittrex extends API {
 			);
 		}
 		
-		return $this->request_data ( '/market/getopenorders', true, $array, 'v1' );
+		return $this->request_data ( '/market/getopenorders', true, $array, 'v1.1' );
 	}
 	
 	/**
@@ -280,7 +280,7 @@ class APIBittrex extends API {
 				'currency' => $currency 
 		);
 		
-		return $this->request_data ( '/account/getbalance', false, $array , 'v1');
+		return $this->request_data ( '/account/getbalance', false, $array , 'v1.1');
 	}
 	
 	/**

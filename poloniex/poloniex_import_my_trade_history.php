@@ -12,7 +12,7 @@ if(count($argv) != 3){
     exit(-1);
 }else{
     $pair = $argv[1];
-    $FROM_DATE = new DateTime($argv[2]);
+    $FROM_DATE = new DateTime($argv[2], new DateTimeZone('Europe/Madrid'));
     $DATABASE = "poloniex";
     $TABLE = "user_trade_history";
  
